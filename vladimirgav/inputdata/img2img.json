@@ -1,0 +1,14 @@
+{
+    "img_id": 2,
+    "imgs_count": 1,
+    "model_id": "lykon\/dreamshaper",
+    "model_lora_weights": "",
+    "img_width": 512,
+    "img_height": 512,
+    "img_num_inference_steps": 25,
+    "img_guidance_scale": 7.5,
+    "prompt": "",
+    "negative_prompt": "",
+    "imgs_dir": "sdroot\/vladimirgav\/imgs",
+    "img_original": "sdroot/vladimirgav/inputdata/img2img.png"
+}

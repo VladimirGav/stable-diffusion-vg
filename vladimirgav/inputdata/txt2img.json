@@ -1,0 +1,13 @@
+{
+    "img_id": 1,
+    "imgs_count": 1,
+    "model_id": "lykon\/dreamshaper",
+    "model_lora_weights": "",
+    "img_width": 512,
+    "img_height": 512,
+    "img_num_inference_steps": 25,
+    "img_guidance_scale": 7.5,
+    "prompt": "8k portrait of beautiful (cyborg) with pink hair",
+    "negative_prompt": "disfigured, kitsch, ugly, oversaturated, grain, low-res, Deformed",
+    "imgs_dir": "sdroot\/vladimirgav\/imgs"
+}

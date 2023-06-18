@@ -1,0 +1,47 @@
+VladimirGav
+GitHub Website: https://vladimirgav.github.io/
+GitHub: https://github.com/VladimirGav
+Source https://github.com/VladimirGav/stable-diffusion-vg
+Copyright (c)
+
+1. Установить Python 3.10.0
+2. Install Win Cuda 11.7.0 local https://developer.nvidia.com/cuda-11-7-0-download-archive
+nvcc --version
+
+
+2. git clone https://github.com/Stability-AI/stablediffusion.git
+3. cd C:\sd\stablediffusion
+4. create sdvenv
+"C:\Users\VladimirGav\AppData\Local\Programs\Python\Python310\python.exe" -m venv C:\sd\stablediffusion\sdvenv
+C:\sd\stablediffusion\sdvenv\Scripts\activate
+
+5. pip install requirements
+pip install -r C:\sd\stablediffusion\vladimirgav\pipinstall\requirements.txt
+
+7. pip install
+pip uninstall torch
+pip install torch==1.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
+pip uninstall torchvision
+pip install torchvision==0.14.1 --extra-index-url https://download.pytorch.org/whl/cu117
+pip uninstall xformers
+pip install xformers==0.0.16
+pip uninstall invisible-watermark
+pip install invisible-watermark
+pip install -e .
+
+8. Run Test torch Cuda and Txt2img start
+python C:\sd\stablediffusion\vladimirgav\scripts\test_torch.py
+python C:\sd\stablediffusion\vladimirgav\scripts\vgTxt2img.py
+python C:\sd\stablediffusion\vladimirgav\scripts\vgImg2img.py
+
+9. Extra use static models
+open-clip-torch==2.18.0
+pip install open_clip_torch
+python C:\sd\stablediffusion\scripts\txt2img.py --prompt "fox" --ckpt C:\sd\stablediffusion\vladimirgav\models\v2-1_512-ema-pruned.ckpt --config C:\sd\stablediffusion\configs\stable-diffusion\v2-inference-v.yaml --H 256 --W 256 --device cuda
+
+10. Notes
+pip freeze > requirementsExample.txt
+set 'PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512'
+models cache C:\Users\VladimirGav\.cache\huggingface\hub
+set XDG_CACHE_HOME=C:\sd\stablediffusion\sdvenv\cache
+
