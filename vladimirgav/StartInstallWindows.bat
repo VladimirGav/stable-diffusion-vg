@@ -12,7 +12,7 @@ Copyright (c)
 
 REM path
 set stable_diffusio_root=%cd%\..
-set vladimirgav=stable_diffusio_root\vladimirgav
+set vladimirgav=%stable_diffusio_root%\vladimirgav
 set sdvenv_path=%vladimirgav%\programs\sdvenv
 
 set programsFolder=%vladimirgav%\programs
