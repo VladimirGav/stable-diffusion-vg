@@ -13,7 +13,7 @@
 - Работает со слабыми видеокартами, протестировал на NVIDIA GeForce RTX 3050 Laptop GPU
 
 ## Установка на Windows
-Видео инструкция скоро
+Видео инструкция https://youtu.be/dUGForWid64
 1. Установите Windows Cuda local версии 11.7.0 для своей видеокарты
 - Для NVIDIA https://developer.nvidia.com/cuda-11-7-0-download-archive
 2. Загружаем zip архив репозитория VladimirGav/stable-diffusion-vg на компьютер и распаковываем.

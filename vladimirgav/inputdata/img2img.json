@@ -1,7 +1,7 @@
 {
     "img_id": 2,
     "imgs_count": 1,
-    "model_id": "lykon\/dreamshaper",
+    "model_id": "lykon/dreamshaper",
     "model_lora_weights": "",
     "img_width": 512,
     "img_height": 512,
