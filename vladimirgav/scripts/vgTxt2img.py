@@ -90,7 +90,7 @@ resultArr = {
 #print(resultArr)
 #exit()
 
-from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, StableDiffusionImg2ImgPipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, StableDiffusionImg2ImgPipeline, DPMSolverMultistepScheduler, StableDiffusionControlNetPipeline
 import torch
 
 #scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
@@ -113,6 +113,56 @@ pipe.enable_attention_slicing()
 
 #pipe(prompt=prompt, image=img, negative_prompt=None, strength=0.7).images[0]
 
+# For long prompt
+
+pipe.enable_sequential_cpu_offload() # my graphics card VRAM is very low
+
+def get_pipeline_embeds(pipeline, prompt, negative_prompt, device):
+    """ Get pipeline embeds for prompts bigger than the maxlength of the pipe
+    :param pipeline:
+    :param prompt:
+    :param negative_prompt:
+    :param device:
+    :return:
+    """
+    max_length = pipeline.tokenizer.model_max_length
+
+    # simple way to determine length of tokens
+    count_prompt = len(prompt.split(" "))
+    count_negative_prompt = len(negative_prompt.split(" "))
+
+    # create the tensor based on which prompt is longer
+    if count_prompt >= count_negative_prompt:
+        input_ids = pipeline.tokenizer(prompt, return_tensors="pt", truncation=False).input_ids.to(device)
+        shape_max_length = input_ids.shape[-1]
+        negative_ids = pipeline.tokenizer(negative_prompt, truncation=False, padding="max_length",
+                                          max_length=shape_max_length, return_tensors="pt").input_ids.to(device)
+
+    else:
+        negative_ids = pipeline.tokenizer(negative_prompt, return_tensors="pt", truncation=False).input_ids.to(device)
+        shape_max_length = negative_ids.shape[-1]
+        input_ids = pipeline.tokenizer(prompt, return_tensors="pt", truncation=False, padding="max_length",
+                                       max_length=shape_max_length).input_ids.to(device)
+
+    concat_embeds = []
+    neg_embeds = []
+    for i in range(0, shape_max_length, max_length):
+        concat_embeds.append(pipeline.text_encoder(input_ids[:, i: i + max_length])[0])
+        neg_embeds.append(pipeline.text_encoder(negative_ids[:, i: i + max_length])[0])
+
+    return torch.cat(concat_embeds, dim=1), torch.cat(neg_embeds, dim=1)
+
+
+#prompt = (22 + 10) * prompt
+#negative_prompt = (22 + 10) * negative_prompt
+
+#print("Our inputs ", prompt, negative_prompt, len(prompt.split(" ")), len(negative_prompt.split(" ")))
+
+prompt_embeds, negative_prompt_embeds = get_pipeline_embeds(pipe, prompt, negative_prompt, device)
+
+# For long prompt END
+
+
 #generator = torch.Generator(device=device).manual_seed(1024)
 for i in range(imgs_count):
     resultArr['imgs'] = {}
@@ -121,7 +171,8 @@ for i in range(imgs_count):
     resultArr['imgs'][i]['FileName'] = FileName
     FilePath = imgs_dir+"/"+FileName
     resultArr['imgs'][i]['FilePath'] = FilePath
-    image = pipe(prompt=prompt, negative_prompt=negative_prompt, width=img_width, height=img_height, num_inference_steps=img_num_inference_steps, guidance_scale=img_guidance_scale).images[0]
+    #image = pipe(prompt=prompt, negative_prompt=negative_prompt, width=img_width, height=img_height, num_inference_steps=img_num_inference_steps, guidance_scale=img_guidance_scale).images[0]
+    image = pipe(prompt_embeds=prompt_embeds, negative_prompt_embeds=negative_prompt_embeds, width=img_width, height=img_height, num_inference_steps=img_num_inference_steps, guidance_scale=img_guidance_scale).images[0]
     image.save(FilePath)
 
 print(json.dumps(resultArr))
