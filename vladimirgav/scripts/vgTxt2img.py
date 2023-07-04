@@ -73,6 +73,10 @@ model_lora_weights = ''
 if 'model_lora_weights' in arrData:
     model_lora_weights = arrData['model_lora_weights']
 
+#safetensors file
+SamplerStr = 'DPM++ SDE Karras'
+if 'sampler' in arrData:
+    SamplerStr = arrData['sampler']
 
 resultArr = {
 'img_id': img_id,
@@ -85,18 +89,59 @@ resultArr = {
 'img_height': img_height,
 'img_num_inference_steps': img_num_inference_steps,
 'img_guidance_scale': img_guidance_scale,
-'model_lora_weights': model_lora_weights,
+'model_lora_weights': model_lora_weights
 }
+
 #print(resultArr)
 #exit()
 
-from diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, StableDiffusionImg2ImgPipeline, DPMSolverMultistepScheduler, StableDiffusionControlNetPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionControlNetPipeline, DiffusionPipeline
+from diffusers import EulerDiscreteScheduler, DDPMScheduler, DPMSolverMultistepScheduler, DPMSolverSDEScheduler
 import torch
 
 #scheduler = EulerDiscreteScheduler.from_pretrained(model_id, subfolder="scheduler")
 #pipe = StableDiffusionPipeline.from_pretrained(model_id, scheduler=scheduler, torch_dtype=torch.float16, safety_checker=None)
-pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, safety_checker=None)
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+
+#pipe = DiffusionPipeline.from_pretrained(model_id)
+
+
+pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, safety_checker=None, requires_safety_checker = False)
+
+def set_scheduler(pipe, SamplerStr):
+    SamplerStr = SamplerStr.lower()
+    SamplerNewStr = ''
+
+    if "euler" in SamplerStr:
+        scheduler = EulerDiscreteScheduler.from_config(pipe.scheduler.config)
+        SamplerNewStr = 'euler'
+    elif "ddpm" in SamplerStr:
+        scheduler = DDPMScheduler.from_config(pipe.scheduler.config)
+        SamplerNewStr = 'ddpm'
+    elif "dpm++ sde" in SamplerStr:
+        scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        scheduler.config.algorithm_type = 'sde-dpmsolver++'
+        SamplerNewStr = 'dpm++ sde'
+    elif "dpm++" in SamplerStr:
+        scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        scheduler.config.algorithm_type = 'dpmsolver++'
+        SamplerNewStr = 'dpm++'
+    else:
+        scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+        SamplerNewStr = 'dpm++'
+
+    if "karras" in SamplerStr:
+            scheduler.config.use_karras_sigmas = True
+            SamplerNewStr = SamplerNewStr+' karras'
+
+    return scheduler, SamplerNewStr
+
+#pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+
+#SamplerStr = 'DPM++ SDE Karras'
+scheduler, SamplerNewStr = set_scheduler(pipe=pipe, SamplerStr=SamplerStr)
+pipe.scheduler = scheduler
+resultArr['sampler']=SamplerNewStr
+
 device = "cuda"
 pipe = pipe.to(device)
 
@@ -157,10 +202,9 @@ def get_pipeline_embeds(pipeline, prompt, negative_prompt, device):
 #negative_prompt = (22 + 10) * negative_prompt
 
 #print("Our inputs ", prompt, negative_prompt, len(prompt.split(" ")), len(negative_prompt.split(" ")))
+# For long prompt END
 
 prompt_embeds, negative_prompt_embeds = get_pipeline_embeds(pipe, prompt, negative_prompt, device)
-
-# For long prompt END
 
 
 #generator = torch.Generator(device=device).manual_seed(1024)
