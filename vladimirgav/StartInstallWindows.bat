@@ -78,6 +78,9 @@ pip install xformers==0.0.16
 pip uninstall -y invisible-watermark
 pip install invisible-watermark
 
+pip install -y defaultdict
+pip install -y compel
+
 REM Install https://github.com/Stability-AI/stablediffusion or https://github.com/CompVis/stable-diffusion
 REM python %stable_diffusio_root%\setup.py develop
 REM cd %stable_diffusio_root%\
