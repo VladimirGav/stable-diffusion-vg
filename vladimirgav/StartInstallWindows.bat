@@ -43,7 +43,8 @@ copy %vladimirgav%\programs\python\python310._pth %vladimirgav%\programs\python\
 del %vladimirgav%\programs\python\python310._pth
 
 REM add python in PATH
-set PATH=%PATH%;%vladimirgav%\programs\python\
+set py_path=%vladimirgav%\programs\python\
+set PATH=%py_path%;%PATH%
 python -V
 
 REM install pip

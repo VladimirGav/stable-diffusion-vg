@@ -14,7 +14,8 @@ REM path
 set vladimirgav=%cd%
 set sdvenv_path=%vladimirgav%\programs\sdvenv
 
-set PATH=%PATH%;%vladimirgav%\programs\python\
+set py_path=%vladimirgav%\programs\python\
+set PATH=%py_path%;%PATH%
 
 REM activate sdvenv
 call %sdvenv_path%/Scripts/activate.bat
