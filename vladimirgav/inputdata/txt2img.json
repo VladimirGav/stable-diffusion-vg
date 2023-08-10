@@ -1,5 +1,6 @@
 {
     "img_id": 1,
+    "nsfw": false,
     "imgs_count": 1,
     "model_id": "lykon/dreamshaper",
     "model_lora_weights": "",

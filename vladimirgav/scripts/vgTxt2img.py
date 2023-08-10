@@ -33,6 +33,10 @@ img_id = 0
 if 'img_id' in arrData:
     img_id = arrData['img_id']
 
+nsfw = False
+if 'nsfw' in arrData:
+    nsfw = arrData['nsfw']
+
 prompt = 'fox'
 if 'prompt' in arrData:
     prompt = arrData['prompt']
@@ -84,6 +88,7 @@ if 'sampler' in arrData:
 
 resultArr = {
 'img_id': img_id,
+'nsfw': nsfw,
 'prompt': prompt,
 'negative_prompt': negative_prompt,
 'model_id': model_id,
@@ -114,7 +119,12 @@ import torch
 #pipe = DiffusionPipeline.from_pretrained(model_id)
 
 torchDtype = torch.float16
-pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torchDtype, safety_checker=None, requires_safety_checker = False)
+
+if nsfw:
+    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torchDtype, safety_checker=None, requires_safety_checker = False)
+else:
+    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torchDtype)
+
 device = "cuda"
 pipe = pipe.to(device)
 pipe.enable_attention_slicing() #Low GPU pipe.enable_attention_slicing()

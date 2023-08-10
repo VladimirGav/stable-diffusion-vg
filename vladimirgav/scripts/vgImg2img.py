@@ -32,6 +32,10 @@ img_id = 0
 if 'img_id' in arrData:
     img_id = arrData['img_id']
 
+nsfw = False
+if 'nsfw' in arrData:
+    nsfw = arrData['nsfw']
+
 prompt = 'fox'
 if 'prompt' in arrData:
     prompt = arrData['prompt']
@@ -95,6 +99,7 @@ init_image.thumbnail((768, 768))
 
 resultArr = {
 'img_id': img_id,
+'nsfw': nsfw,
 'prompt': prompt,
 'negative_prompt': negative_prompt,
 'model_id': model_id,
@@ -115,7 +120,11 @@ resultArr = {
 import torch
 from diffusers import StableDiffusionImg2ImgPipeline, DPMSolverMultistepScheduler
 
-pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id, torch_dtype=torch.float16, safety_checker=None)
+if nsfw:
+    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id, torch_dtype=torch.float16, safety_checker=None, requires_safety_checker = False)
+else:
+    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
 device = "cuda"
 pipe = pipe.to(device)
