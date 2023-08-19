@@ -106,7 +106,7 @@ resultArr = {
 
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionControlNetPipeline, DiffusionPipeline
 from diffusers import EulerDiscreteScheduler, DDPMScheduler, DPMSolverMultistepScheduler, DPMSolverSDEScheduler
-from compel import Compel
+#from compel import Compel
 
 from safetensors.torch import load_file
 from collections import defaultdict
