@@ -45,7 +45,16 @@ del %vladimirgav%\programs\python\python310._pth
 REM add python in PATH
 set py_path=%vladimirgav%\programs\python\
 set PATH=%py_path%;%PATH%
-python -V
+
+REM check python version
+set "required_version=3.10.0"
+set "PYTHON_MAJOR_VERSION=0"
+for /f %%i in ('python -c "import sys; print(str(sys.version_info[0])+str('.')+str(sys.version_info[1])+str('.')+str(sys.version_info[2]))"') do set PYTHON_MAJOR_VERSION=%%i
+if "%required_version%" NEQ "%PYTHON_MAJOR_VERSION%" (
+    echo Error: Python version required: %required_version%, Installed Python version: %PYTHON_MAJOR_VERSION%. Try removing Python from environment variables or install the correct version.
+    pause
+	exit /b 1
+)
 
 REM install pip
 curl -o %pipPy% %pip_url%
