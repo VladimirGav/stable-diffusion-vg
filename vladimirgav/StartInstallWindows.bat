@@ -28,7 +28,11 @@ REM set pip_url=https://bootstrap.pypa.io/get-pip.py
 set pip_url=https://vladimirgav.github.io/files/pip/get-pip.py
 
 REM Create folder if it doesn't exist
-if not exist %programsFolder% (
+if exist %programsFolder% (
+    echo To reinstall, you need to delete the program folder
+	pause
+	exit /b 1
+) else (
     MD %programsFolder%
 	echo programsFolder created
 )
@@ -69,6 +73,9 @@ python -m virtualenv %sdvenv_path%
 
 REM activate sdvenv
 call %sdvenv_path%/Scripts/activate.bat
+
+REM Home models cache
+set XDG_CACHE_HOME=%sdvenv_path%\cache
 
 python -m pip list
 
